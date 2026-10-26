@@ -116,5 +116,55 @@ class StringPatchTests(unittest.TestCase):
         self.assertEqual(utf16_offsets(blob, "нет такой"), [])
 
 
+
+class ActivateTests(unittest.TestCase):
+    """Логика плана патча: сборка правок и их применение."""
+
+    @staticmethod
+    def make_record(comp_id: int, level: int) -> bytes:
+        rec = bytearray(54)
+        rec[0:4] = b"\x00\x00\x00\x00"
+        rec[4:8] = struct.pack("<I", 1)
+        rec[8:12] = struct.pack("<I", comp_id)
+        rec[12:18] = b"\x00\x00\x00\xff\x7f\x8c"
+        rec[8 + 23] = level
+        return bytes(rec)
+
+    def build(self, levels: dict[int, int]) -> bytes:
+        return b"\x00" * 32 + b"".join(self.make_record(i, l) for i, l in levels.items())
+
+    def test_second_zones_set_to_three(self):
+        import activate
+        ids = list(activate.SECOND)
+        data = self.build({i: 2 for i in ids})
+        ops = activate.build_ops(data, "second3")
+        self.assertEqual(len(ops), len(ids))
+        patched = activate.apply_ops(data, ops)
+        activate.verify(data, patched, ops)
+        for op in ops:
+            self.assertEqual(patched[op["offset"]], 3)
+
+    def test_idempotent_when_already_patched(self):
+        import activate
+        ids = list(activate.SECOND)
+        data = self.build({i: 3 for i in ids})
+        self.assertEqual(activate.build_ops(data, "second3"), [])
+
+    def test_missing_competition_raises(self):
+        import activate
+        with self.assertRaises(Exception):
+            activate.build_ops(b"\x00" * 200, "second3")
+
+    def test_verify_catches_stray_change(self):
+        import activate
+        ids = list(activate.SECOND)
+        data = self.build({i: 2 for i in ids})
+        ops = activate.build_ops(data, "second3")
+        bad = bytearray(activate.apply_ops(data, ops))
+        bad[1] ^= 0xFF
+        with self.assertRaises(Exception):
+            activate.verify(data, bytes(bad), ops)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
