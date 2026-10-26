@@ -55,19 +55,6 @@ REGISTER_VA = 0xD63C10         # функция регистрации диви�
 # что должно быть на месте до патча
 ORIGINAL_HOOK = struct.pack("<BI", 0xE8, (REGISTER_VA - (HOOK_VA + 5)) & 0xFFFFFFFF)
 
-# Второй шаг: у зон во второй таблице стоит признак «-1» (неполноценное
-# соревнование), у играбельных лиг — «-2». Меняем на -2: push -1 == 6A FF,
-# push -2 == 6A FE. Смещения — это те самые push -1 перед (число команд, id).
-FLAG_SITES = {
-    130488: 11_058_183,
-    130489: 11_058_117,
-    130490: 11_058_161,
-    130491: 11_058_139,
-    8_055_759: 11_058_205,
-}
-FLAG_BYTES_FROM = b"\x6A\xFF"
-FLAG_BYTES_TO = b"\x6A\xFE"
-
 # зоны Второго дивизиона: (id, ступень, название)
 ZONES = [
     (130488, 2, "Второй дивизион - Запад"),
@@ -159,10 +146,6 @@ def patch(src: Path, dst: Path, dry_run: bool = False) -> None:
         )
     if blob[STUB_RAW:STUB_RAW + STUB_SPACE] != b"\x90" * STUB_SPACE:
         raise SystemExit("место под код в .cave занято — другая сборка exe")
-    for comp_id, site in FLAG_SITES.items():
-        if blob[site:site + 2] != FLAG_BYTES_FROM:
-            raise SystemExit(f"у зоны {comp_id} по смещению {site} не push -1: "
-                             f"{blob[site:site + 2].hex(' ')}")
 
     stub = build_stub()
     print(f"\nзоны, которые добавим (ступени 2..{1 + len(ZONES)}):")
@@ -173,9 +156,6 @@ def patch(src: Path, dst: Path, dry_run: bool = False) -> None:
 
     blob[STUB_RAW:STUB_RAW + len(stub)] = stub
     blob[HOOK_RAW:HOOK_RAW + 5] = jmp_rel(HOOK_VA, STUB_VA)
-    for comp_id, site in FLAG_SITES.items():
-        blob[site:site + 2] = FLAG_BYTES_TO
-        print(f"   признак зоны {comp_id}: -1 -> -2 @{site}")
     update_checksum(blob)
 
     if dry_run:
@@ -193,8 +173,6 @@ def revert(src: Path, dst: Path) -> None:
         raise SystemExit("этот файл не пропатчен — откатывать нечего")
     blob[HOOK_RAW:HOOK_RAW + 5] = ORIGINAL_HOOK
     blob[STUB_RAW:STUB_RAW + STUB_SPACE] = b"\x90" * STUB_SPACE
-    for site in FLAG_SITES.values():
-        blob[site:site + 2] = FLAG_BYTES_FROM
     update_checksum(blob)
     dst.parent.mkdir(parents=True, exist_ok=True)
     dst.write_bytes(bytes(blob))
