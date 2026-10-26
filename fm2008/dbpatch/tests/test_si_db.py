@@ -133,6 +133,10 @@ class ActivateTests(unittest.TestCase):
     def build(self, levels: dict[int, int]) -> bytes:
         return b"\x00" * 32 + b"".join(self.make_record(i, l) for i, l in levels.items())
 
+    def test_second_zone_ids_match_exe_registrations(self):
+        import activate
+        self.assertEqual(set(activate.SECOND), {130488, 130489, 130490, 130491, 8055759})
+
     def test_second_zones_set_to_three(self):
         import activate
         ids = list(activate.SECOND)
