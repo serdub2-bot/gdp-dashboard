@@ -27,6 +27,7 @@
 
 ## Второй дивизион России: патч базы
 
-Готовые файлы и код — в [`dbpatch/`](dbpatch/README.md):
-`dbpatch/ready/fm2008-second-division-pyramid.zip` (два `.dat`, заменить в игре) и
-`activate.py` (то же самое из командной строки, с проверками и откатом).
+Готовый патч — [`dbpatch/ready/fm2008-exe-second-division.zip`](dbpatch/ready/fm2008-exe-second-division.zip):
+пропатченный `fm.exe` (97 байт), который добавляет зоны Второго дивизиона в
+список играбельных лиг. Список играбельных дивизионов FM2008 хранит в exe, а не
+в базе — подробности и код в [`dbpatch/`](dbpatch/README.md).

@@ -17,6 +17,7 @@ import zipfile
 from pathlib import Path
 
 import activate
+import patch_exe
 from si_db import Container, DbError, compress_exact, pick_russian, zlib_streams
 
 XML = """<!--
@@ -111,10 +112,16 @@ def patch_competitions(db: Path, variant: str) -> dict[str, bytes]:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--db", required=True)
+    ap.add_argument("--db", help="папка data/db игры (для сборки базы)")
+    ap.add_argument("--exe", help="fm.exe (для сборки пропатченного exe)")
     ap.add_argument("--out", default="ready")
     ap.add_argument("--variant", default="pyramid")
     args = ap.parse_args()
+    if args.exe:
+        build_exe(Path(args.exe), Path(args.out))
+        return
+    if not args.db:
+        raise SystemExit("нужен --db или --exe")
 
     db = Path(args.db)
     out_dir = Path(args.out)
@@ -136,6 +143,58 @@ def main() -> None:
         zf.writestr("ЧИТАЙ_МЕНЯ.txt", README)
         zf.writestr("SHA256SUMS.txt", "".join(f"{h}  {n}\n" for n, h in sums.items()))
     print(f"\nархив: {archive} ({archive.stat().st_size / 1e6:.1f} МБ)")
+
+
+EXE_README = """FM2008: Второй дивизион России — включён в самой игре
+=========================================================
+
+ПОЧЕМУ ПАТЧИЛСЯ fm.exe, А НЕ БАЗА
+Список играбельных дивизионов в FM2008 зашит в fm.exe, а не в базе данных.
+Для каждой страны там есть список дивизионов по порядку, и у России в нём
+всего два: Премьер-лига и Первый дивизион (у Англии — шесть, у Испании — три).
+Поэтому Второй дивизион не появлялся в игре, что бы мы ни меняли в файлах базы.
+
+ЧТО ИЗМЕНЕНО
+В fm.exe дописаны пять регистраций — зоны Второго дивизиона:
+    Запад, Центр, Юг, Восток, Урал/Волга
+Изменено 97 байт из 22 249 472. Ничего не удалено и не сдвинуто,
+длина файла та же.
+
+УСТАНОВКА
+  1. Закройте игру.
+  2. Найдите fm.exe (обычно в папке игры, рядом с fmdata) и скопируйте
+     его в сторонку — это ваш откат.
+  3. Замените fm.exe файлом fm.exe из этого архива.
+  4. Удалите кэш: Документы\Sports Interactive\Football Manager 2008\cache
+  5. Запустите игру -> Новая игра -> выбор лиг -> Россия.
+     В списке лиг России должны появиться зоны Второго дивизиона.
+
+Файлы базы (client_db.dat и остальные) можно оставить оригинальными:
+патч от них не зависит. Если вы их уже заменяли на мои — желательно
+вернуть свои, чтобы проверять по одному изменению за раз.
+
+ОТКАТ
+Вернуть старый fm.exe. Всё.
+
+ЕСЛИ В СПИСКЕ ЛИГ НИЧЕГО НЕ ПОЯВИЛОСЬ
+Значит для запуска дивизиона игре нужно ещё и описание правил
+(число туров, обмен местами с дивизионом выше). Напишите, что показал
+список лиг, и я продолжу с этого места.
+"""
+
+
+def build_exe(exe: Path, out_dir: Path) -> None:
+    out_dir.mkdir(parents=True, exist_ok=True)
+    patched = out_dir / "fm.exe"
+    patch_exe.patch(exe, patched)
+    digest = hashlib.sha256(patched.read_bytes()).hexdigest()
+    archive = out_dir / "fm2008-exe-second-division.zip"
+    with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zf:
+        zf.write(patched, arcname="fm.exe")
+        zf.writestr("ЧИТАЙ_МЕНЯ.txt", EXE_README)
+        zf.writestr("SHA256SUMS.txt", f"{digest}  fm.exe\n")
+    patched.unlink()
+    print(f"архив: {archive} ({archive.stat().st_size / 1e6:.1f} МБ)")
 
 
 if __name__ == "__main__":
