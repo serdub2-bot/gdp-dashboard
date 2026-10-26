@@ -28,5 +28,5 @@
 ## Второй дивизион России: патч базы
 
 Готовые файлы и код — в [`dbpatch/`](dbpatch/README.md):
-`dist/fm2008-second-division-pyramid.zip` (два `.dat`, заменить в игре) и
+`dbpatch/ready/fm2008-second-division-pyramid.zip` (два `.dat`, заменить в игре) и
 `activate.py` (то же самое из командной строки, с проверками и откатом).
