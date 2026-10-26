@@ -105,6 +105,11 @@ class Container:
                 raise DbError(f"{out.name}: проверка после записи не прошла — файл удалён")
         return out
 
+    def pack(self, data: bytes, level: int = 9) -> bytes:
+        """Собрать файл в памяти: заголовок + сжатое содержимое."""
+        payload = zlib.compress(data, level) if self.compressed else bytes(data)
+        return self.header + payload
+
     # ------------------------------------------------------------- отчёты
     def describe(self) -> dict:
         data = self.decompressed()
@@ -167,6 +172,43 @@ def pick_russian(streams: list[tuple[int, bytes]]) -> tuple[int, bytes]:
 
 
 # ------------------------------------------------------------------ строки
+def compress_exact(data: bytes, target_len: int) -> bytes:
+    """Сжать так, чтобы длина потока была ровно `target_len` байт.
+
+    Зачем: в `lang_db.dat` в начале файла лежит список смещений потоков. Если
+    пересжать изменённый поток в другой размер, все смещения после него станут
+    неверными и игра базу не примет. Поэтому хвост добивается пустыми
+    stored-блоками deflate (они ничего не добавляют к данным).
+
+    Пустой stored-блок занимает 5 байт, поэтому подходит любой запас, кратный 5.
+    Перебираем уровни и стратегии сжатия и берём первый, который попадает.
+    """
+    import zlib as _z
+
+    data = bytes(data)
+    strategies = (_z.Z_DEFAULT_STRATEGY, _z.Z_FILTERED, _z.Z_RLE, _z.Z_FIXED)
+    best: tuple[int, bytes] | None = None
+    for level in (9, 8, 7, 6, 5, 4, 3, 2, 1, 0):
+        for strategy in strategies:
+            try:
+                obj = _z.compressobj(level, _z.DEFLATED, 15, 8, strategy)
+                body = obj.compress(data) + obj.flush(_z.Z_SYNC_FLUSH)
+            except Exception:
+                continue
+            pad = target_len - (len(body) + 5 + 4)  # финальный блок + adler32
+            if pad < 0 or pad % 5:
+                if best is None or len(body) < best[0]:
+                    best = (len(body), body)
+                continue
+            filler = b"\x00\x00\x00\xff\xff" * (pad // 5)
+            stream = body + filler + b"\x01\x00\x00\xff\xff" + \
+                _z.adler32(data).to_bytes(4, "big")
+            if len(stream) == target_len and _z.decompress(stream) == data:
+                return stream
+    hint = f" (минимум {best[0] + 9} байт)" if best else ""
+    raise DbError(f"не удалось сжать в {target_len} байт без сдвига смещений{hint}")
+
+
 def utf16_offsets(haystack: bytes, needle: str) -> list[int]:
     """Все смещения строки в UTF-16LE-блоке."""
     raw = needle.encode("utf-16-le")

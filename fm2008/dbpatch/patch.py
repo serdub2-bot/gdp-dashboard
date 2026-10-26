@@ -32,7 +32,7 @@ import json
 import shutil
 from pathlib import Path
 
-from si_db import (Container, DbError, pick_russian, utf16_offsets, zlib_streams)
+from si_db import Container, DbError, compress_exact, pick_russian, utf16_offsets, zlib_streams
 
 TEXT_FILES = ("lang_db.dat",)
 
@@ -138,13 +138,9 @@ def _stream_len(blob: bytes, offset: int) -> int:
 
 
 def _recompress(data: bytes, original: bytes) -> bytes:
-    """Пересжать так же, как было: сначала тем же уровнем, иначе максимумом."""
-    import zlib as _z
-    for level in (6, 9, 1):
-        cand = _z.compress(bytes(data), level)
-        if len(cand) <= len(original) + 64:
-            return cand
-    return _z.compress(bytes(data), 9)
+    """Пересжать ровно в тот же размер: в lang_db.dat есть список смещений,
+    и любой сдвиг ломает все потоки после изменённого."""
+    return compress_exact(data, len(original))
 
 
 def main() -> None:
