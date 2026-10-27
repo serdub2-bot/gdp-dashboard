@@ -16,7 +16,11 @@ import argparse
 import struct
 from pathlib import Path
 
-from compare_roster_regions import zone_links_before_name
+from compare_roster_regions import (
+    nearest_team_id_after,
+    string_id_for_name,
+    zone_links_before_name,
+)
 from hunt import lang_blob, list_competitions
 from si_db import Container, zlib_streams
 
@@ -91,21 +95,42 @@ def main() -> None:
     print(f"уникальных полных имён `(D)` в английском потоке: {len(reserves)}")
     print(f"ссылок перед основным именем: {parent_count}")
     print(f"ссылок перед именем `(D)`: {direct_count}")
-    print("вариант `(D)`; пары у основного имени; пары у `(D)`")
+    print("parent ID; reserve ID; вариант `(D)`; пары у родителя; пары у `(D)`")
     for reserve_name, parent_links, reserve_links in linked:
+        parent_name = reserve_name[:-len(SUFFIX)]
+        parent_match = string_id_for_name(streams[0], parent_name)
+        reserve_match = string_id_for_name(streams[0], reserve_name)
+        parent_id = parent_match[0] if parent_match and not parent_match[1] else None
+        reserve_id = reserve_match[0] if reserve_match and not reserve_match[1] else None
+
         def title(comp_id: int) -> str:
             return russian_names.get(
                 comp_id,
                 COMPETITION_NAME_FALLBACKS.get(comp_id, "без названия"),
             )
 
-        def display(links: set[tuple[int, int, int]]) -> str:
-            return ", ".join(
-                f"{zone} ({title(zone)}) → {lower} ({title(lower)})"
-                for zone, lower, _ in sorted(links)
-            ) or "—"
+        def display(
+            links: set[tuple[int, int, int]], team_id: int | None
+        ) -> str:
+            rows = []
+            for zone, lower, pair_pos in sorted(links):
+                team_pos = (
+                    nearest_team_id_after(server, team_id, pair_pos)
+                    if team_id is not None else None
+                )
+                trace = f"ID+{team_pos - pair_pos}B" if team_pos is not None else "ID не рядом"
+                rows.append(
+                    f"{zone} ({title(zone)}) → {lower} ({title(lower)}) [{trace}]"
+                )
+            return ", ".join(rows) or "—"
 
-        print(f"{reserve_name}; {display(parent_links)}; {display(reserve_links)}")
+        print(
+            f"{parent_id if parent_id is not None else '—'}; "
+            f"{reserve_id if reserve_id is not None else '—'}; {reserve_name}; "
+            f"{display(parent_links, parent_id)}; {display(reserve_links, reserve_id)}"
+        )
+    print("ID+N — ближайшее бинарное вхождение ID после пары; это соседство, "
+          "не доказательство границы записи или назначения поля.")
 
 
 if __name__ == "__main__":
