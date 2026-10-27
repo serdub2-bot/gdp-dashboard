@@ -175,6 +175,31 @@ class ExePatchTests(unittest.TestCase):
         candidate.verify_bytes(bytes(source), patched)
         self.assertEqual(len(source), len(patched))
 
+    def test_flag4_single_zone_probe_is_one_isolated_registration(self):
+        import build_flag4_single_zone_probe as candidate
+        import patch_exe
+        stub = candidate.build_stub()
+        original_call = b"\x8B\xCE" + patch_exe.call_rel(
+            patch_exe.STUB_VA + 2, patch_exe.REGISTER_VA
+        )
+        zone_args = (
+            bytes((0x6A, candidate.ZONE_FLAGS, 0x6A, candidate.ZONE_TIER, 0x68))
+            + struct.pack("<I", candidate.ZONE_ID)
+        )
+        self.assertTrue(stub.startswith(original_call))
+        self.assertEqual(stub.count(zone_args), 1)
+        self.assertEqual(stub.count(b"\xE8"), 2)
+        self.assertEqual((candidate.ZONE_ID, candidate.ZONE_TIER, candidate.ZONE_FLAGS),
+                         (130488, 2, 4))
+
+        length = patch_exe.STUB_RAW + patch_exe.STUB_SPACE
+        source = bytearray(length)
+        source[patch_exe.HOOK_RAW:patch_exe.HOOK_RAW + 5] = patch_exe.ORIGINAL_HOOK
+        source[patch_exe.STUB_RAW:patch_exe.STUB_RAW + patch_exe.STUB_SPACE] = b"\x90" * patch_exe.STUB_SPACE
+        patched = candidate.patch_bytes(bytes(source))
+        candidate.verify_bytes(bytes(source), patched)
+        self.assertEqual(len(source), len(patched))
+
     def test_flag4_fixed_groups_probe_changes_only_five_range_sentinels(self):
         import build_flag4_fixed_groups_probe as candidate
         import patch_exe
