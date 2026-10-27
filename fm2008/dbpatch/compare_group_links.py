@@ -42,10 +42,13 @@ GROUPS = {
     62: "Portugal B North",
     63: "Portugal B Central",
     64: "Portugal B South",
+    67: "Spain First Division (control)",
+    68: "Spain Second Division (control)",
     69: "Spain B1",
     70: "Spain B2",
     71: "Spain B3",
     72: "Spain B4",
+    130487: "Russia First Division (control)",
     130488: "Russia West",
     130489: "Russia Center",
     130490: "Russia South",
@@ -102,6 +105,21 @@ def nearby_utf16_text(data: bytes, pos: int, span: int = 220) -> str | None:
     return None
 
 
+def group_links(data: bytes, group_id: int) -> list[tuple[int, int, str | None]]:
+    """Find `03 <group> 04 <competition>` pairs and nearby club-name hints."""
+    pattern = b"\x03" + struct.pack("<I", group_id) + b"\x04"
+    found: list[tuple[int, int, str | None]] = []
+    pos = 0
+    while True:
+        pos = data.find(pattern, pos)
+        if pos < 0:
+            return found
+        if pos + 10 <= len(data):
+            related_id = struct.unpack_from("<I", data, pos + 6)[0]
+            found.append((pos, related_id, nearby_utf16_text(data, pos)))
+        pos += 1
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--db", required=True, type=Path)
@@ -140,28 +158,15 @@ def main() -> None:
             marker = client[pos + 4:pos + 13]
         row_index = struct.unpack_from("<I", client, pos - 4)[0]
         p1, p2 = struct.unpack_from("<II", client, pos + 36)
-        print(f"  {label:<18} id={comp_id:<9} level={client[pos + 23]} "
+        print(f"  {label:<32} id={comp_id:<9} level={client[pos + 23]} "
               f"row={row_index} +36/+40={p1}/{p2} marker={marker.hex(' ')}")
 
     print("\nЧастоты связей server_db: 03 <group ID> 04 <related ID>")
     for comp_id, label in GROUPS.items():
-        pattern = b"\x03" + struct.pack("<I", comp_id) + b"\x04"
-        counts: Counter[int] = Counter()
-        readable_names: set[str] = set()
-        readable_hits = 0
-        pos = 0
-        while True:
-            pos = server.find(pattern, pos)
-            if pos < 0:
-                break
-            if pos + 10 <= len(server):
-                related_id = struct.unpack_from("<I", server, pos + 6)[0]
-                counts[related_id] += 1
-                hint = nearby_utf16_text(server, pos)
-                if hint:
-                    readable_hits += 1
-                    readable_names.add(hint)
-            pos += 1
+        links = group_links(server, comp_id)
+        counts: Counter[int] = Counter(related for _, related, _ in links)
+        readable_names = {hint for _, _, hint in links if hint}
+        readable_hits = sum(hint is not None for _, _, hint in links)
         related = ", ".join(
             f"{other} ({names.get(other, 'без строки')}) ×{count}"
             for other, count in counts.most_common(8)
