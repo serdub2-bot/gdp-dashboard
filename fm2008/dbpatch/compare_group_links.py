@@ -2,8 +2,8 @@
 """Сравнить иерархические ID/записи Испании B и российских зон.
 
 Скрипт не изменяет файлы. Он выводит:
-* маркеры и поля уровня родительских ID 121091, 126964 и 8051008;
-* уровни и маркеры записей групп Испании, Португалии и России;
+* маркеры, уровни и поля +36/+40 родительских ID 121091, 126964 и 8051008;
+* те же поля записей групп Испании, Португалии и России;
 * частоты бинарных связей вида `03 <u32 group_id> 04 <u32 related_comp_id>`
   в server_db.dat и названия связанных ID, если они есть в русской таблице строк.
 
@@ -55,7 +55,7 @@ GROUPS = {
 
 
 def locate_parent(data: bytes, comp_id: int) -> tuple[int, bytes] | None:
-    """Найти ID; распознать standard marker либо испанский special marker."""
+    """Найти ID по обычному либо известным альтернативным маркерам записи."""
     raw_id = struct.pack("<I", comp_id)
     pos = data.find(raw_id)
     while pos >= 0:
@@ -120,8 +120,10 @@ def main() -> None:
             print(f"  {comp_id}: нет записи")
             continue
         pos, marker = row
+        p1, p2 = struct.unpack_from("<II", client, pos + 36)
+        row_index = struct.unpack_from("<I", client, pos - 4)[0]
         print(f"  {comp_id} {names.get(comp_id, '')}: marker={marker.hex(' ')} "
-              f"level={client[pos + 23]} offset={pos}")
+              f"level={client[pos + 23]} row={row_index} +36/+40={p1}/{p2}")
 
     print("\nДочерние DB-записи:")
     for comp_id, label in GROUPS.items():
@@ -133,13 +135,13 @@ def main() -> None:
                 pos, marker = special_row
         if pos is None:
             print(f"  {label:<18} id={comp_id:<9} row=не распознана")
-        elif marker is not None:
-            print(f"  {label:<18} id={comp_id:<9} level={client[pos + 23]} "
-                  f"marker={marker.hex(' ')}")
-        else:
+            continue
+        if marker is None:
             marker = client[pos + 4:pos + 13]
-            print(f"  {label:<18} id={comp_id:<9} level={client[pos + 23]} "
-                  f"marker={marker.hex(' ')}")
+        row_index = struct.unpack_from("<I", client, pos - 4)[0]
+        p1, p2 = struct.unpack_from("<II", client, pos + 36)
+        print(f"  {label:<18} id={comp_id:<9} level={client[pos + 23]} "
+              f"row={row_index} +36/+40={p1}/{p2} marker={marker.hex(' ')}")
 
     print("\nЧастоты связей server_db: 03 <group ID> 04 <related ID>")
     for comp_id, label in GROUPS.items():
