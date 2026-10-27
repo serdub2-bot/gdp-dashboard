@@ -57,6 +57,27 @@ def name_map(db: Path) -> dict[int, str]:
     return {row["id"]: row["name"] for row in list_competitions(lang_blob(db), "")}
 
 
+def nearby_utf16_text(data: bytes, pos: int, span: int = 220) -> str | None:
+    """Первый печатный UTF-16LE-фрагмент после пары; только подсказка для анализа."""
+    end = min(len(data), pos + span)
+    for start in range(pos + 9, end - 1, 2):
+        chars: list[str] = []
+        cursor = start
+        while cursor + 1 < end:
+            codepoint = data[cursor] | (data[cursor + 1] << 8)
+            if codepoint == 0:
+                break
+            if not (32 <= codepoint <= 126 or 0x400 <= codepoint <= 0x52F
+                    or codepoint in (0x2013, 0x2019, 0x2014)):
+                break
+            chars.append(chr(codepoint))
+            cursor += 2
+        text = "".join(chars).strip()
+        if len(text) >= 8 and sum(char.isalpha() for char in text) >= 5:
+            return text
+    return None
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--db", required=True, type=Path)
@@ -82,7 +103,7 @@ def main() -> None:
     for comp_id, label in GROUPS.items():
         pos = find_record(client, comp_id)
         if pos is None:
-            print(f"  {label:<18} id={comp_id:<9} standard-row=нет")
+            print(f"  {label:<18} id={comp_id:<9} standard-row=не распознана")
         else:
             print(f"  {label:<18} id={comp_id:<9} level={client[pos + 23]}")
 
@@ -105,6 +126,24 @@ def main() -> None:
         )
         print(f"  {label:<18} matches={sum(counts.values()):<4} {related or 'нет'}")
 
+    print("\nПримеры: текст рядом с отдельными связями (эвристическая подсказка):")
+    examples = ((130488, 8050940), (130490, 8050903), (130489, 8050900))
+    for group_id, related_id in examples:
+        pattern = (b"\x03" + struct.pack("<I", group_id) + b"\x04"
+                   + struct.pack("<I", related_id))
+        pos = 0
+        while True:
+            pos = server.find(pattern, pos)
+            if pos < 0:
+                print(f"  {group_id} -> {related_id}: нет")
+                break
+            text = nearby_utf16_text(server, pos)
+            if text:
+                print(f"  {group_id} -> {related_id}: рядом «{text}» (offset={pos})")
+                break
+            pos += 1
+
 
 if __name__ == "__main__":
+
     main()
