@@ -17,21 +17,31 @@ from compare_roster_regions import (  # noqa: E402
 
 
 class RosterRegionAnalysisTests(unittest.TestCase):
-    def test_name_match_accepts_only_full_or_short_parenthetical_suffix(self):
-        text = "Ротор Волгоград"
-        annotated = "Ротор Волгоград (Д)"
+    def test_name_match_marks_reserve_suffix_and_prefers_exact_name(self):
+        text = "Черноморец Новороссийск"
+        annotated = text + " (Д)"
         annotated_blob = (
-            struct.pack("<II", 476256, len(annotated))
+            struct.pack("<II", 476541, len(annotated))
             + annotated.encode("utf-16-le") + b"\x00\x00"
         )
+        exact_blob = (
+            struct.pack("<II", 1301102, len(text))
+            + text.encode("utf-16-le") + b"\x00\x00"
+        )
+        self.assertEqual(string_id_for_name(annotated_blob, text), (476541, True))
+        self.assertEqual(string_id_for_name(annotated_blob, annotated), (476541, False))
+        self.assertEqual(
+            string_id_for_name(annotated_blob + exact_blob, text), (1301102, False)
+        )
+
+    def test_name_match_rejects_unrelated_longer_name(self):
+        text = "Ротор Волгоград"
         unrelated = "Ротор Волгоградский"
-        unrelated_blob = (
+        blob = (
             struct.pack("<II", 476256, len(unrelated))
             + unrelated.encode("utf-16-le") + b"\x00\x00"
         )
-        self.assertEqual(string_id_for_name(annotated_blob, text), 476256)
-        self.assertEqual(string_id_for_name(annotated_blob, annotated), 476256)
-        self.assertIsNone(string_id_for_name(unrelated_blob, text))
+        self.assertIsNone(string_id_for_name(blob, text))
 
     def test_localized_name_rejects_unrelated_reused_id(self):
         russian_entry = struct.pack("<II", 16777220, len("Зеленоград"))

@@ -2,9 +2,10 @@
 """Сверить клубные региональные ссылки базы с CSV Второго дивизиона 2007 года.
 
 Read-only диагностический скрипт. Он сопоставляет полную русскую строку
-клуба (допуская короткую помету в скобках) с записью `lang_db`, выбирает
-правдоподобное английское имя среди записей
-того же ID и проверяет в `server_db` типизированную пару
+клуба с записью `lang_db`; если найдено только имя с `(Д)`, помечает его как
+возможную резервную команду и не считает матчем первой команды. Для точного
+имени выбирается правдоподобная английская запись того же ID; в `server_db`
+проверяется типизированная пара
 `03 <zone> 04 <lower group>` перед именем.
 
 Это проверка корреляции, не декодер состава: часть имён CSV отсутствует в базе,
@@ -41,28 +42,30 @@ ROSTER_DEFAULT = (
 )
 
 
-def string_id_for_name(text_blob: bytes, text: str) -> int | None:
-    """Найти полную строку или её запись с коротким скобочным суффиксом."""
+def string_id_for_name(text_blob: bytes, text: str) -> tuple[int, bool] | None:
+    """Найти точную строку; отдельно пометить fallback на запись с `(Д)`."""
     raw = text.encode("utf-16-le")
+    annotated_id: int | None = None
     pos = 0
     while True:
         pos = text_blob.find(raw, pos)
         if pos < 0:
-            return None
+            return (annotated_id, True) if annotated_id is not None else None
         if pos >= 8:
             string_id, length = struct.unpack_from("<II", text_blob, pos - 8)
             end = pos + length * 2
             if 1 <= length <= 160 and end + 2 <= len(text_blob):
                 full = text_blob[pos:end].decode("utf-16-le", "replace")
                 suffix = full[len(text):]
-                annotated = full.startswith(text) and re.fullmatch(
-                    r" \([^()]{1,8}\)", suffix
-                ) is not None
-                if (
-                    text_blob[end:end + 2] == b"\x00\x00"
-                    and (full == text or annotated)
-                ):
-                    return string_id
+                is_reserve_variant = (
+                    full.startswith(text)
+                    and re.fullmatch(r" \(Д\)", suffix) is not None
+                )
+                if text_blob[end:end + 2] == b"\x00\x00":
+                    if full == text:
+                        return string_id, False
+                    if is_reserve_variant and annotated_id is None:
+                        annotated_id = string_id
         pos += 2
 
 
@@ -174,13 +177,21 @@ def main() -> None:
     print("zone; клуб CSV; ID; имя из базы; найденные пары (zone ID → lower ID); статус")
     for row in rows:
         expected_id = ZONE_IDS.get(row["zone"])
-        string_id = string_id_for_name(russian, row["full"])
-        if string_id is None:
+        name_match = string_id_for_name(russian, row["full"])
+        if name_match is None:
             counts["no-id"] += 1
             print(f"{row['zone']}; {row['full']}; —; —; —; нет точной строки в lang_db")
             continue
+        string_id, reserve_variant = name_match
 
         name = localized_name(streams, string_id, server, row["full"])
+        if reserve_variant or (name is not None and name.endswith(" (D)")):
+            counts["reserve-variant"] += 1
+            print(
+                f"{row['zone']}; {row['full']}; {string_id}; {name or '—'}; —; "
+                "только вариант (Д), не считаю первой командой"
+            )
+            continue
         if name is None:
             counts["no-server-name"] += 1
             print(f"{row['zone']}; {row['full']}; {string_id}; —; —; нет имени в server_db")
