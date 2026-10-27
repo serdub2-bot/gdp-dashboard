@@ -115,6 +115,10 @@ UTF-16LE-название `Sportakademclub Moscow`. Значит, это дей�
 ```bash
 python3 fm2008/dbpatch/compare_roster_regions.py --db /path/to/db
 python3 fm2008/dbpatch/tests/test_compare_roster_regions.py
+
+# проверить связанные записи `(D)` и лиги, на которые они указывают
+python3 fm2008/dbpatch/compare_reserve_links.py --db /path/to/db
+python3 fm2008/dbpatch/tests/test_compare_reserve_links.py
 ```
 
 После отсева резервных вариантов получено 42 сопоставления первых команд из
