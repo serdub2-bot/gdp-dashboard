@@ -117,6 +117,16 @@ class StringPatchTests(unittest.TestCase):
 
 
 
+class ExePatchTests(unittest.TestCase):
+    def test_stub_registers_parent_competition_only(self):
+        import patch_exe
+        comp_id, tier, _ = patch_exe.SECOND_DIVISION
+        stub = patch_exe.build_stub()
+        self.assertEqual((comp_id, tier), (8051008, 2))
+        self.assertEqual(stub.count(struct.pack("<I", comp_id)), 1)
+        self.assertEqual(stub.count(b"\xE8"), 2)  # parent + original First division
+
+
 class ActivateTests(unittest.TestCase):
     """Логика плана патча: сборка правок и их применение."""
 
