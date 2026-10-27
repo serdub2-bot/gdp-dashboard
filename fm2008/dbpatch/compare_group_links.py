@@ -2,8 +2,8 @@
 """Сравнить иерархические ID/записи Испании B и российских зон.
 
 Скрипт не изменяет файлы. Он выводит:
-* маркер и поле уровня для родительских ID 121091 и 8051008;
-* уровни обычных записей дочерних групп;
+* маркеры и поля уровня родительских ID 121091, 126964 и 8051008;
+* уровни и маркеры записей групп Испании, Португалии и России;
 * частоты бинарных связей вида `03 <u32 group_id> 04 <u32 related_comp_id>`
   в server_db.dat и названия связанных ID, если они есть в русской таблице строк.
 
@@ -26,9 +26,22 @@ from hunt import lang_blob, list_competitions
 from si_db import Container
 
 SPECIAL_PARENT = 121_091
+PORTUGAL_PARENT = 126_964
 RUSSIAN_PARENT = 8_051_008
 SPECIAL_MARKER = bytes.fromhex("00 00 00 90 00 c5 6e ff 01")
+PORTUGAL_PARENT_MARKER = bytes.fromhex("00 00 00 5a 01 c0 7f 5a 01")
+SPAIN_B4_MARKER = bytes.fromhex("00 00 00 ff 7f c5 6e c5 6e")
+PORTUGAL_GROUP_MARKER = bytes.fromhex("00 00 00 06 02 00 70 06 02")
+SPECIAL_GROUP_MARKERS = {
+    62: PORTUGAL_GROUP_MARKER,
+    63: PORTUGAL_GROUP_MARKER,
+    64: PORTUGAL_GROUP_MARKER,
+    72: SPAIN_B4_MARKER,
+}
 GROUPS = {
+    62: "Portugal B North",
+    63: "Portugal B Central",
+    64: "Portugal B South",
     69: "Spain B1",
     70: "Spain B2",
     71: "Spain B3",
@@ -47,7 +60,18 @@ def locate_parent(data: bytes, comp_id: int) -> tuple[int, bytes] | None:
     pos = data.find(raw_id)
     while pos >= 0:
         marker = data[pos + 4:pos + 13]
-        if marker == SPECIAL_MARKER or find_record(data, comp_id) == pos:
+        if marker in {SPECIAL_MARKER, PORTUGAL_PARENT_MARKER} or find_record(data, comp_id) == pos:
+            return pos, marker
+        pos = data.find(raw_id, pos + 1)
+    return None
+
+
+def locate_marker(data: bytes, comp_id: int, markers: set[bytes]) -> tuple[int, bytes] | None:
+    raw_id = struct.pack("<I", comp_id)
+    pos = data.find(raw_id)
+    while pos >= 0:
+        marker = data[pos + 4:pos + 13]
+        if marker in markers:
             return pos, marker
         pos = data.find(raw_id, pos + 1)
     return None
@@ -90,7 +114,7 @@ def main() -> None:
     names = name_map(args.db)
 
     print("Родительские записи (поле уровня: +23 от ID):")
-    for comp_id in (SPECIAL_PARENT, RUSSIAN_PARENT):
+    for comp_id in (SPECIAL_PARENT, PORTUGAL_PARENT, RUSSIAN_PARENT):
         row = locate_parent(client, comp_id)
         if row is None:
             print(f"  {comp_id}: нет записи")
@@ -102,15 +126,27 @@ def main() -> None:
     print("\nДочерние DB-записи:")
     for comp_id, label in GROUPS.items():
         pos = find_record(client, comp_id)
+        marker = None
+        if pos is None and comp_id in SPECIAL_GROUP_MARKERS:
+            special_row = locate_marker(client, comp_id, {SPECIAL_GROUP_MARKERS[comp_id]})
+            if special_row is not None:
+                pos, marker = special_row
         if pos is None:
-            print(f"  {label:<18} id={comp_id:<9} standard-row=не распознана")
+            print(f"  {label:<18} id={comp_id:<9} row=не распознана")
+        elif marker is not None:
+            print(f"  {label:<18} id={comp_id:<9} level={client[pos + 23]} "
+                  f"marker={marker.hex(' ')}")
         else:
-            print(f"  {label:<18} id={comp_id:<9} level={client[pos + 23]}")
+            marker = client[pos + 4:pos + 13]
+            print(f"  {label:<18} id={comp_id:<9} level={client[pos + 23]} "
+                  f"marker={marker.hex(' ')}")
 
     print("\nЧастоты связей server_db: 03 <group ID> 04 <related ID>")
     for comp_id, label in GROUPS.items():
         pattern = b"\x03" + struct.pack("<I", comp_id) + b"\x04"
         counts: Counter[int] = Counter()
+        readable_names: set[str] = set()
+        readable_hits = 0
         pos = 0
         while True:
             pos = server.find(pattern, pos)
@@ -119,12 +155,18 @@ def main() -> None:
             if pos + 10 <= len(server):
                 related_id = struct.unpack_from("<I", server, pos + 6)[0]
                 counts[related_id] += 1
+                hint = nearby_utf16_text(server, pos)
+                if hint:
+                    readable_hits += 1
+                    readable_names.add(hint)
             pos += 1
         related = ", ".join(
             f"{other} ({names.get(other, 'без строки')}) ×{count}"
             for other, count in counts.most_common(8)
         )
-        print(f"  {label:<18} matches={sum(counts.values()):<4} {related or 'нет'}")
+        print(f"  {label:<18} matches={sum(counts.values()):<4} "
+              f"name-hints={readable_hits}/{len(readable_names)} unique "
+              f"{related or 'нет'}")
 
     print("\nПримеры: текст рядом с отдельными связями (эвристическая подсказка):")
     examples = ((130488, 8050940), (130490, 8050903), (130489, 8050900))
