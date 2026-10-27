@@ -126,6 +126,33 @@ class ExePatchTests(unittest.TestCase):
             self.assertEqual(stub.count(struct.pack("<I", comp_id)), 1)
         self.assertEqual(stub.count(b"\xE8"), 6)  # 5 zones + original First division
 
+    def test_parent_group_stub_matches_spanish_registration_shape(self):
+        import build_parent_group_release as candidate
+        import patch_exe
+        stub = candidate.build_stub()
+        self.assertEqual(stub.count(struct.pack("<I", candidate.PARENT_ID)), 1)
+        self.assertEqual(stub.count(b"\xE8"), 2)  # parent + original First division
+        self.assertEqual(candidate.PARENT_TIER, 2)
+        self.assertEqual(len(candidate.FLAG_SITES), 5)
+        self.assertIn(b"\x6A\x02\x68" + struct.pack("<I", candidate.PARENT_ID), stub)
+        self.assertIn(patch_exe.jmp_rel(
+            patch_exe.STUB_VA + len(stub) - 5, patch_exe.RETURN_VA), stub)
+
+    def test_parent_group_patch_changes_only_declared_sites(self):
+        import build_parent_group_release as candidate
+        import patch_exe
+        length = patch_exe.STUB_RAW + patch_exe.STUB_SPACE
+        source = bytearray(length)
+        source[patch_exe.HOOK_RAW:patch_exe.HOOK_RAW + 5] = patch_exe.ORIGINAL_HOOK
+        source[patch_exe.STUB_RAW:patch_exe.STUB_RAW + patch_exe.STUB_SPACE] = b"\x90" * patch_exe.STUB_SPACE
+        for site in candidate.FLAG_SITES.values():
+            source[site:site + 2] = candidate.FLAG_FROM
+        patched = candidate.patch_bytes(bytes(source))
+        candidate.verify_bytes(bytes(source), patched)
+        for site in candidate.FLAG_SITES.values():
+            self.assertEqual(patched[site:site + 2], candidate.FLAG_TO)
+        self.assertEqual(len(source), len(patched))
+
 
 class ActivateTests(unittest.TestCase):
     """Логика плана патча: сборка правок и их применение."""
