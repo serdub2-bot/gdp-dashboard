@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from compare_roster_regions import (  # noqa: E402
     string_id_for_name,
     localized_name,
+    nearest_team_id_after,
     zone_links_before_name,
 )
 
@@ -81,6 +82,17 @@ class RosterRegionAnalysisTests(unittest.TestCase):
                     zone_links_before_name(bytes(data), name),
                     {(130488, 8050940, start)},
                 )
+
+    def test_team_id_trace_finds_only_forward_occurrences_within_window(self):
+        data = bytearray(900)
+        pair_pos = 80
+        team_id = 130523
+        data[pair_pos + 188:pair_pos + 192] = struct.pack("<I", team_id)
+        self.assertEqual(
+            nearest_team_id_after(bytes(data), team_id, pair_pos), pair_pos + 188
+        )
+        self.assertIsNone(nearest_team_id_after(bytes(data), team_id, pair_pos, span=100))
+        self.assertIsNone(nearest_team_id_after(bytes(data), team_id, pair_pos + 200))
 
     def test_zone_links_reject_nearby_but_wrong_gaps(self):
         name = "Sportakademclub Moscow"

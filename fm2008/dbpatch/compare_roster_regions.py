@@ -132,6 +132,21 @@ def localized_name(
     return ranked[-1][1]
 
 
+def nearest_team_id_after(
+    server: bytes, team_id: int, pair_pos: int, span: int = 512
+) -> int | None:
+    """Найти ближайшее вхождение ID команды после пары, в пределах окна.
+
+    Это только проверка бинарного соседства: без декодера границ записей она не
+    доказывает, что пара и ID принадлежат одному полю или что это членство в лиге.
+    """
+    raw_id = struct.pack("<I", team_id)
+    start = pair_pos + 1
+    end = min(len(server), pair_pos + span + len(raw_id))
+    pos = server.find(raw_id, start, end)
+    return pos if pos >= 0 else None
+
+
 def zone_links_before_name(server: bytes, name: str) -> set[tuple[int, int, int]]:
     """Собрать exact links, начинающиеся за 48/49 байт до UTF-16 имени."""
     raw_name = name.encode("utf-16-le")
@@ -209,11 +224,23 @@ def main() -> None:
             status = "пара не найдена"
             counts["no-link"] += 1
         counts["resolved"] += 1
-        display = ", ".join(f"{zone_id}→{lower_id}" for zone_id, lower_id, _ in sorted(links)) or "—"
+        display_items = []
+        for zone_id, lower_id, pair_pos in sorted(links):
+            team_id_pos = nearest_team_id_after(server, string_id, pair_pos)
+            if team_id_pos is None:
+                counts["pair-without-nearby-team-id"] += 1
+                id_trace = "ID>512B"
+            else:
+                delta = team_id_pos - pair_pos
+                counts["team-id-within-512B-after-pair"] += 1
+                id_trace = f"ID+{delta}B"
+            display_items.append(f"{zone_id}→{lower_id} [{id_trace}]")
+        display = ", ".join(display_items) or "—"
         print(f"{row['zone']}; {row['full']}; {string_id}; {name}; {display}; {status}")
 
     print("\nИтог:", ", ".join(f"{key}={value}" for key, value in sorted(counts.items())))
-    print("Внимание: совпадение зоны не подтверждает текущую регистрацию клуба в лиге.")
+    print("Внимание: близость team ID к паре — бинарная эвристика, не граница записи "
+          "и не доказательство регистрации клуба в лиге.")
 
 
 if __name__ == "__main__":
