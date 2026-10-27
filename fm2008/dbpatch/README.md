@@ -174,6 +174,7 @@ python3 patch.py examples/plan.example.json --db ... --out out
 
 # 5. тесты
 python3 tests/test_si_db.py
+python3 tests/test_compare_group_links.py
 ```
 
 ## Что уже известно про базу (факты, а не догадки)
