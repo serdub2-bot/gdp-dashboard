@@ -175,6 +175,21 @@ class ExePatchTests(unittest.TestCase):
         candidate.verify_bytes(bytes(source), patched)
         self.assertEqual(len(source), len(patched))
 
+    def test_flag4_fixed_groups_probe_changes_only_five_range_sentinels(self):
+        import build_flag4_fixed_groups_probe as candidate
+        import patch_exe
+        length = patch_exe.STUB_RAW + patch_exe.STUB_SPACE
+        source = bytearray(length)
+        source[patch_exe.HOOK_RAW:patch_exe.HOOK_RAW + 5] = patch_exe.ORIGINAL_HOOK
+        source[patch_exe.STUB_RAW:patch_exe.STUB_RAW + patch_exe.STUB_SPACE] = b"\x90" * patch_exe.STUB_SPACE
+        for site in candidate.FLAG_SITES.values():
+            source[site:site + 2] = candidate.FLAG_FROM
+        patched = candidate.patch_bytes(bytes(source))
+        candidate.verify_bytes(bytes(source), patched)
+        for site in candidate.FLAG_SITES.values():
+            self.assertEqual(patched[site:site + 2], candidate.FLAG_TO)
+        self.assertEqual(len(source), len(patched))
+
 
 class ActivateTests(unittest.TestCase):
     """Логика плана патча: сборка правок и их применение."""
