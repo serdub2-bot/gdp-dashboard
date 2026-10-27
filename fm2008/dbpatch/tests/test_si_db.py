@@ -118,13 +118,13 @@ class StringPatchTests(unittest.TestCase):
 
 
 class ExePatchTests(unittest.TestCase):
-    def test_stub_registers_parent_competition_only(self):
+    def test_stub_registers_all_zones_at_same_tier(self):
         import patch_exe
-        comp_id, tier, _ = patch_exe.SECOND_DIVISION
         stub = patch_exe.build_stub()
-        self.assertEqual((comp_id, tier), (8051008, 2))
-        self.assertEqual(stub.count(struct.pack("<I", comp_id)), 1)
-        self.assertEqual(stub.count(b"\xE8"), 2)  # parent + original First division
+        self.assertEqual([tier for _, tier, _ in patch_exe.SECOND_ZONES], [2] * 5)
+        for comp_id, _, _ in patch_exe.SECOND_ZONES:
+            self.assertEqual(stub.count(struct.pack("<I", comp_id)), 1)
+        self.assertEqual(stub.count(b"\xE8"), 6)  # 5 zones + original First division
 
 
 class ActivateTests(unittest.TestCase):
