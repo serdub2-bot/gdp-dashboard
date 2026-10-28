@@ -1,0 +1,21 @@
+STATUS: FAILED IN-GAME — DO NOT INSTALL
+
+Artifact: fm2008-russian-roster-links-parent-flag4-probe.zip
+
+User test on FM2008: starting a new game showed “Невозможно загрузить базу данных”.
+After restoring the original files, the game worked again. The EXE in this archive is
+byte-identical to the previously tested flag-4 parent-registration baseline. This
+implicates the DB edits in this combined package, but does not isolate one TEAM row
+or exclude a version/install mismatch.
+
+The bulk builder encoded TEAM+0x54 slot references as big-endian. That encoding was
+not proven for this loader mode: F44D30/F451F0 conditionally byte-swap based on a
+stream-reader flag that remains unresolved. Without swapping, for example,
+00 00 00 B3 is signed DWORD 0xB3000000; C20AF0 uses a signed jge bounds check, so a
+negative index may bypass the upper-bound guard. This is a plausible failure mode,
+not yet confirmed as the cause.
+
+Do not use this archive as a patch. It is retained only as a reproducible failed
+probe. Any follow-up must first verify the actual serialization mode and be tested
+on a backed-up copy of the exact 8.0.2 database. The single-row endian diagnostic
+is not included in this PR and has not been game-tested.
