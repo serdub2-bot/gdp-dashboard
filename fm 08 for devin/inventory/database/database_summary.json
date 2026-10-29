@@ -1,0 +1,314 @@
+{
+  "source_archives": [
+    {
+      "archive": "1.zip",
+      "archive_size": 5947348,
+      "archive_sha256": "f7d84712033e92f4deede7a77a3921c3d548454f78117b33924a53d6d14d2f22"
+    },
+    {
+      "archive": "inbox/1.zip",
+      "archive_size": 16178234,
+      "archive_sha256": "7b28dc59a618d1cbe166b0f3dcce678548a3757dd29d7147bc0526082680710d"
+    },
+    {
+      "archive": "inbox/2.zip",
+      "archive_size": 19238332,
+      "archive_sha256": "9f31b4a4f0625d8f671103443d9f7a1b5350e732d3b9764d93bd9165f0753c5b"
+    },
+    {
+      "archive": "inbox/3.zip",
+      "archive_size": 15911105,
+      "archive_sha256": "d132c1d704f33a7a93924c2add6ab4cee008c2720743c4cab017b303e7eff53b"
+    },
+    {
+      "archive": "inbox/4.zip",
+      "archive_size": 7049877,
+      "archive_sha256": "7dd3d253b281c8df13e7b750f6fdbc9119dfa6da2dac63501fa264562ff3f3ff"
+    }
+  ],
+  "database_files_seen": 10,
+  "lang_db": {
+    "raw_bytes": 19265704,
+    "zlib_stream_count": 20,
+    "expanded_bytes_sum": 75235498,
+    "unique_expanded_payload_count": 18,
+    "unique_expanded_bytes_sum": 67610816,
+    "stream_directory_language_id_candidates": 19,
+    "russian_stream_file_offset": "0x00dd936e",
+    "russian_stream_expanded_bytes": 3686154,
+    "russian_stream_cyrillic_codepoints": 309358,
+    "heuristic_string_candidates_written": 57164,
+    "string_extraction_warning": "Candidate dump uses an aligned u32-id/u32-length/UTF-16 pattern; it is a search aid, not a complete authoritative schema decode."
+  },
+  "history_tables": {
+    "pl": {
+      "files": {
+        "dt": "pl_hist_dt.dat",
+        "id": "pl_hist_id.dat",
+        "index": "pl_hist_index.dat"
+      },
+      "history_entry_count_from_index_header": 220236,
+      "index_pair_count": 220236,
+      "offset_pair_count": 220236,
+      "dt_body_bytes_after_9_byte_header": 24129468,
+      "index_header_count_matches_pairs": true,
+      "id_pair_count_matches_index_count": true,
+      "all_id_offsets_are_ordered_and_in_bounds": true,
+      "offset_range_lengths": {
+        "zero_length_count": 53406,
+        "min": 0,
+        "median": 44.0,
+        "mean": 87.562,
+        "max": 858,
+        "p90": 242,
+        "p99": 418
+      },
+      "gaps_between_adjacent_offset_ranges": {
+        "min": 22,
+        "median": 22,
+        "max": 22,
+        "constant_gap": true
+      },
+      "index_key_ordered_non_decreasing": true,
+      "unique_index_key_count": 220236,
+      "index_ordinals_form_permutation": true,
+      "index_ordinals_are_identity_order": true,
+      "first_index_pairs": [
+        [
+          0,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          6,
+          4
+        ],
+        [
+          8,
+          5
+        ],
+        [
+          9,
+          6
+        ],
+        [
+          12,
+          7
+        ],
+        [
+          13,
+          8
+        ],
+        [
+          14,
+          9
+        ],
+        [
+          15,
+          10
+        ],
+        [
+          16,
+          11
+        ]
+      ],
+      "first_offset_pairs": [
+        [
+          0,
+          330
+        ],
+        [
+          352,
+          682
+        ],
+        [
+          704,
+          1078
+        ],
+        [
+          1100,
+          1408
+        ],
+        [
+          1430,
+          1452
+        ],
+        [
+          1474,
+          1826
+        ],
+        [
+          1848,
+          2244
+        ],
+        [
+          2266,
+          2596
+        ],
+        [
+          2618,
+          2860
+        ],
+        [
+          2882,
+          3146
+        ],
+        [
+          3168,
+          3498
+        ],
+        [
+          3520,
+          3894
+        ]
+      ],
+      "interpretation_limit": "Offset-pair/index relationship is structurally consistent; field semantics are inferred, not officially documented."
+    },
+    "non_pl": {
+      "files": {
+        "dt": "non_pl_hist_dt.dat",
+        "id": "non_pl_hist_id.dat",
+        "index": "non_pl_hist_index.dat"
+      },
+      "history_entry_count_from_index_header": 302348,
+      "index_pair_count": 302348,
+      "offset_pair_count": 302348,
+      "dt_body_bytes_after_9_byte_header": 13773816,
+      "index_header_count_matches_pairs": true,
+      "id_pair_count_matches_index_count": true,
+      "all_id_offsets_are_ordered_and_in_bounds": true,
+      "offset_range_lengths": {
+        "zero_length_count": 157529,
+        "min": 0,
+        "median": 0.0,
+        "mean": 27.556,
+        "max": 882,
+        "p90": 90,
+        "p99": 198
+      },
+      "gaps_between_adjacent_offset_ranges": {
+        "min": 18,
+        "median": 18,
+        "max": 18,
+        "constant_gap": true
+      },
+      "index_key_ordered_non_decreasing": true,
+      "unique_index_key_count": 301531,
+      "index_ordinals_form_permutation": true,
+      "index_ordinals_are_identity_order": false,
+      "first_index_pairs": [
+        [
+          0,
+          2279
+        ],
+        [
+          2,
+          2280
+        ],
+        [
+          3,
+          2281
+        ],
+        [
+          4,
+          2282
+        ],
+        [
+          6,
+          2283
+        ],
+        [
+          8,
+          2284
+        ],
+        [
+          9,
+          2285
+        ],
+        [
+          12,
+          2286
+        ],
+        [
+          13,
+          2287
+        ],
+        [
+          14,
+          2288
+        ],
+        [
+          15,
+          2289
+        ],
+        [
+          16,
+          2290
+        ]
+      ],
+      "first_offset_pairs": [
+        [
+          0,
+          18
+        ],
+        [
+          36,
+          36
+        ],
+        [
+          54,
+          54
+        ],
+        [
+          72,
+          72
+        ],
+        [
+          90,
+          90
+        ],
+        [
+          108,
+          108
+        ],
+        [
+          126,
+          126
+        ],
+        [
+          144,
+          144
+        ],
+        [
+          162,
+          162
+        ],
+        [
+          180,
+          180
+        ],
+        [
+          198,
+          198
+        ],
+        [
+          216,
+          216
+        ]
+      ],
+      "interpretation_limit": "Offset-pair/index relationship is structurally consistent; field semantics are inferred, not officially documented."
+    }
+  },
+  "scope_note": "No league, match, roster, or patch experiment analysis is included."
+}

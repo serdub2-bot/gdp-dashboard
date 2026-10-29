@@ -1,0 +1,27 @@
+[
+  {
+    "archive": "1.zip",
+    "archive_size": 5947348,
+    "archive_sha256": "f7d84712033e92f4deede7a77a3921c3d548454f78117b33924a53d6d14d2f22"
+  },
+  {
+    "archive": "inbox/1.zip",
+    "archive_size": 16178234,
+    "archive_sha256": "7b28dc59a618d1cbe166b0f3dcce678548a3757dd29d7147bc0526082680710d"
+  },
+  {
+    "archive": "inbox/2.zip",
+    "archive_size": 19238332,
+    "archive_sha256": "9f31b4a4f0625d8f671103443d9f7a1b5350e732d3b9764d93bd9165f0753c5b"
+  },
+  {
+    "archive": "inbox/3.zip",
+    "archive_size": 15911105,
+    "archive_sha256": "d132c1d704f33a7a93924c2add6ab4cee008c2720743c4cab017b303e7eff53b"
+  },
+  {
+    "archive": "inbox/4.zip",
+    "archive_size": 7049877,
+    "archive_sha256": "7dd3d253b281c8df13e7b750f6fdbc9119dfa6da2dac63501fa264562ff3f3ff"
+  }
+]
