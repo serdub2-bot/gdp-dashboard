@@ -1,0 +1,21 @@
+{
+  "input_path_at_generation": "/tmp/fm_analysis/fm.exe",
+  "file_size_bytes": 22249472,
+  "sha256": "9725365b4996622c122e37f9f91c903c2ccef112f32121d33db000ed9012d42b",
+  "md5": "3356708b1c3e67769df405de94c34f3f",
+  "pe32_plus": false,
+  "machine": "0x014c",
+  "machine_name": "i386",
+  "timestamp_unix": 1202963398,
+  "timestamp_utc": "2008-02-14T04:29:58+00:00",
+  "characteristics": "0x010f",
+  "subsystem": 2,
+  "image_base": "0x00400000",
+  "entry_rva": "0x00d30153",
+  "entry_va": "0x01130153",
+  "size_of_image": "0x01805000",
+  "size_of_headers": "0x00001000",
+  "checksum_field": "0x01542880",
+  "dll_characteristics": "0x0000",
+  "number_of_sections": 5
+}
