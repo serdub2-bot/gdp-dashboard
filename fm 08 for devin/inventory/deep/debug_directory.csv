@@ -1,0 +1,2 @@
+type,size,timestamp,rva,file_offset,codeview,pdb_guid,pdb_age,pdb_path
+2,123,1202963398,0x012bf068,0x012bf068,RSDS,3C1DEAC910D84E84BEC18ACEBBCCE8061,1,E:\perforce_data\code\releases\fm\8.0.2\english\game\builds\win32\release final\application\fm.pdb

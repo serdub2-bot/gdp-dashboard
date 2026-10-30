@@ -1,0 +1,20 @@
+{
+  "source_filename": "fm.exe",
+  "file_size": 22249472,
+  "sha256": "9725365b4996622c122e37f9f91c903c2ccef112f32121d33db000ed9012d42b",
+  "debug_directory_entries": 1,
+  "rtti_occurrences": 8154,
+  "rtti_unique_names": 7795,
+  "rtti_pointer_candidates": 22543,
+  "rtti_validated_col_candidates": 14296,
+  "class_hierarchy_descriptors": 7989,
+  "class_hierarchy_member_records": 38667,
+  "rtti_vtable_candidates": 14296,
+  "utf16le_ascii_string_runs_min_4": 1628,
+  "string_pointer_xref_candidates": 45700,
+  "linear_sweep_instructions_including_data_bytes": 4893069,
+  "linear_sweep_direct_call_or_jump_candidates": 850872,
+  "linear_sweep_direct_call_targets_in_text": 30991,
+  "linear_sweep_function_entry_candidates": 31361,
+  "warning": "Linear x86 sweep is not a CFG; embedded data and alignment can create false instructions and edges."
+}

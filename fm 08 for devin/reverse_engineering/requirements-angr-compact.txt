@@ -1,0 +1,6 @@
+# Verified compatible Angr dependencies for the compact decompiler, Python 3.11
+angr==9.2.173
+bitstring==4.4.0
+bitarray==3.12.3
+cffi==1.17.1
+pycparser==2.22

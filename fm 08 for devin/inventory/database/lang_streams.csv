@@ -1,0 +1,21 @@
+stream_index_by_file_offset,file_offset,offset_relative_to_9_byte_header,language_id_candidate,compressed_bytes,expanded_bytes,leading_u32_candidate_count,cyrillic_codepoints,expanded_sha256,first_aligned_utf16_samples,zlib_verified,same_expanded_payload_count
+0,0x000000aa,0x000000a1,32,1025443,4034748,20273,738,cb7d80a32642a2b7dc5fb26209cdf892d6fc2670e523b0c7a1d67362bb87b9fe,Ghent | Bruges | Mouscron | Antwerp | Aalst | Mechelen | Liège | Genk,True,1
+1,0x000fa64d,0x000fa644,7,956323,3789122,20273,678,1c9ce18360de7eeae70a7912c014f4c59a575b1c1e6c8370026769cb23599726,Gent | Brügge | Mouscron | Antwerpen | Aalst | Mechelen | Liège | Genk,True,1
+2,0x001e3df0,0x001e3de7,10,953505,3759036,20273,683,11be1cdd8efd9e1a32ca03543fdcc405afeda3cbe0e0e2ab6929aae2ed44c5a5,Gent | Brugge | Moeskroen | Antwerpen | Aalst | Mechelen | Luik | Genk,True,1
+3,0x002cca91,0x002cca88,11,957435,3777062,20273,690,63efed115061864cdac06018e9715ae39ab2e7216fe25478cd5429e8bf591021,Gand | Bruges | Mouscron | Anvers | Alost | Malines | Liège | Genk,True,1
+4,0x003b668c,0x003b6683,15,992113,3965742,20273,944,8c263b5a669e65f19bc8b040b721ca0657d33cb939f221a3bd5e7f9a65be5eff,Gent | Brügge | Mouscron | Antwerpen | Aalst | Mechelen | Lüttich | Genk,True,1
+5,0x004a89fd,0x004a89f4,22,971713,3801102,20273,1110,d8caa66a40af2f309c4424f64ae702c2ea0c337a9fc29102e17ef5268a6661d8,Ghent | Bruges | Mouscron | Anversa | Aalst | Malines | Liegi | Genk,True,1
+6,0x00595dbe,0x00595db5,19,955460,3782012,20273,678,c2827a57e6cc7aa58bf3b5fd1ff56c507b5552e19bc09f13d9fe163cd18e66d9,Ghent | Brügge | Mouscron | Antwerpen | Aalst | Mechelen | Liège | Genk,True,1
+7,0x0067f202,0x0067f1f9,24,958123,3772274,20273,687,3f71fc26876192341890c07063f70114f2433f7b48af7b2ae80a07a001c28b24,Ghent | Bruges | Mouscron | Antuérpia | Aalst | Malines | Liège | Genk,True,1
+8,0x007690ad,0x007690a4,30,1018228,3967312,20273,1544,b977e3ac68446938e94f52d676fa285b8a1cc7cbc9a6e771f08e95b8ff2a8729,Gante | Brujas | Mouscron | Amberes | Aalst | Malinas | Lieja | Genk,True,1
+9,0x00861a21,0x00861a18,6,956344,3775616,20273,680,dc76fc754f57c1e2570befa7b7cc7736c7e427a51285eb5c50a1722b48893f30,Gent | Bruges | Mouscron | Antwerpen | Aalst | Mechelen | Liège | Genk,True,1
+10,0x0094b1d9,0x0094b1d0,1000002,976253,3782336,20273,678,71f69470e75bb3f331723c76856bc29e57761ac570dec71e30a2626990b64c8f,Ghent | Bruges | Mouscron | Antwerp | Aalst | Mechelen | Liège | Genk,True,1
+11,0x00a39756,0x00a3974d,1000003,936977,3580740,20273,829,4685b246a4bb13c1d5d74db3fdff54f597485b68d1e80ae46e2862c05cb5b0b9,Ghent | Bruges | Mouscron | Antwerp | Aalst | Mechelen | Liège | Genk,True,1
+12,0x00b1e367,0x00b1e35e,18,944854,3812416,20273,678,076ba5e849f186e98ff194115c424c427e5fa522b164877368602a6c055e9a90,Ghent | Bruges | Mouscron | Antwerp | Aalst | Mechelen | Liège | Genk,True,2
+13,0x00c04e3d,0x00c04e34,16,976712,3772800,20273,725,9ae22be5ab711997a209f74677bc8d0649dbe9c6cd9c4279bf5c7c8ddc223039,Gandawa | Brugia | Mouscron | Antwerpia | Aalst | Mechelen | Liège | Genk,True,1
+14,0x00cf3585,0x00cf357c,21,941545,3605246,20273,678,e7690c69737bee2448e31fc592adad72b70ccd58948c89a9ec6188cf298efc57,Ghent | Bruges | Mouscron | Antwerp | Aalst | Mechelen | Liège | Genk,True,1
+15,0x00dd936e,0x00dd9365,17,967922,3686154,20273,309358,cded7edf855f545de9a11b9f90414c427f59a8020f6463817ec2e44c55ff3bc1,Гент | Брюгге | Мускрон | Антверпен | Аальст | Мехелен | Льеж | Генк,True,1
+16,0x00ec5860,0x00ec5857,1000004,942058,3134832,20273,678,34fbf9568394413d3c573cd5ecf85f57e19e0e6ab5f75c06ba5b361fcd2a5dc7,브뤼헤 | 모스크론 | 앤트워프 | 알스트 | 메켈렌 | 리에쥬 | 하렐베케 | 브뤼셀,True,1
+17,0x00fab84a,0x00fab841,1000000,944854,3812416,20273,678,076ba5e849f186e98ff194115c424c427e5fa522b164877368602a6c055e9a90,Ghent | Bruges | Mouscron | Antwerp | Aalst | Mechelen | Liège | Genk,True,2
+18,0x01092320,0x01092317,1000001,944836,3812266,20273,678,0202b3296cd451854d2a10629bec8cfdf50b5e21db7a3fdb6b17a19309925801,Ghent | Bruges | Mouscron | Antwerp | Aalst | Mechelen | Liège | Genk,True,2
+19,0x01178de4,0x01178ddb,,944836,3812266,20273,678,0202b3296cd451854d2a10629bec8cfdf50b5e21db7a3fdb6b17a19309925801,Ghent | Bruges | Mouscron | Antwerp | Aalst | Mechelen | Liège | Genk,True,2

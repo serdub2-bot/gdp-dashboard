@@ -1,0 +1,9 @@
+{
+  "imports": 283,
+  "named_exports": 382,
+  "rtti_matching_records": 8154,
+  "rtti_unique_names": 7795,
+  "ascii_printable_runs_min_4": 186211,
+  "cave_jmp_byte_pattern_candidates": 15,
+  "resource_data_entries": 43
+}

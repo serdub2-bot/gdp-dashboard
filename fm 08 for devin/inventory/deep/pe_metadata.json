@@ -1,0 +1,152 @@
+{
+  "file_header": {
+    "Machine": 332,
+    "NumberOfSections": 5,
+    "TimeDateStamp": 1202963398,
+    "PointerToSymbolTable": 0,
+    "NumberOfSymbols": 0,
+    "SizeOfOptionalHeader": 224,
+    "Characteristics": 271
+  },
+  "optional_header": {
+    "Magic": 267,
+    "MajorLinkerVersion": 7,
+    "MinorLinkerVersion": 10,
+    "SizeOfCode": 14782464,
+    "SizeOfInitializedData": 10395648,
+    "SizeOfUninitializedData": 0,
+    "AddressOfEntryPoint": 13828435,
+    "BaseOfCode": 4096,
+    "BaseOfData": 14786560,
+    "ImageBase": 4194304,
+    "SectionAlignment": 4096,
+    "FileAlignment": 4096,
+    "MajorOperatingSystemVersion": 4,
+    "MinorOperatingSystemVersion": 0,
+    "MajorImageVersion": 0,
+    "MinorImageVersion": 0,
+    "MajorSubsystemVersion": 4,
+    "MinorSubsystemVersion": 0,
+    "SizeOfImage": 25186304,
+    "SizeOfHeaders": 4096,
+    "CheckSum": 22292608,
+    "Subsystem": 2,
+    "DllCharacteristics": 0,
+    "SizeOfStackReserve": 1048576,
+    "SizeOfStackCommit": 4096,
+    "SizeOfHeapReserve": 1048576,
+    "SizeOfHeapCommit": 4096,
+    "LoaderFlags": 0,
+    "NumberOfRvaAndSizes": 16
+  },
+  "entry_va": "0x01130153",
+  "load_config": {
+    "Structure": "IMAGE_LOAD_CONFIG_DIRECTORY",
+    "Size": {
+      "FileOffset": 19656736,
+      "Offset": 0,
+      "Value": 72
+    },
+    "TimeDateStamp": {
+      "FileOffset": 19656740,
+      "Offset": 4,
+      "Value": "0x0        [Thu Jan  1 00:00:00 1970 UTC]"
+    },
+    "MajorVersion": {
+      "FileOffset": 19656744,
+      "Offset": 8,
+      "Value": 0
+    },
+    "MinorVersion": {
+      "FileOffset": 19656746,
+      "Offset": 10,
+      "Value": 0
+    },
+    "GlobalFlagsClear": {
+      "FileOffset": 19656748,
+      "Offset": 12,
+      "Value": 0
+    },
+    "GlobalFlagsSet": {
+      "FileOffset": 19656752,
+      "Offset": 16,
+      "Value": 0
+    },
+    "CriticalSectionDefaultTimeout": {
+      "FileOffset": 19656756,
+      "Offset": 20,
+      "Value": 0
+    },
+    "DeCommitFreeBlockThreshold": {
+      "FileOffset": 19656760,
+      "Offset": 24,
+      "Value": 0
+    },
+    "DeCommitTotalFreeThreshold": {
+      "FileOffset": 19656764,
+      "Offset": 28,
+      "Value": 0
+    },
+    "LockPrefixTable": {
+      "FileOffset": 19656768,
+      "Offset": 32,
+      "Value": 0
+    },
+    "MaximumAllocationSize": {
+      "FileOffset": 19656772,
+      "Offset": 36,
+      "Value": 0
+    },
+    "VirtualMemoryThreshold": {
+      "FileOffset": 19656776,
+      "Offset": 40,
+      "Value": 0
+    },
+    "ProcessHeapFlags": {
+      "FileOffset": 19656780,
+      "Offset": 44,
+      "Value": 0
+    },
+    "ProcessAffinityMask": {
+      "FileOffset": 19656784,
+      "Offset": 48,
+      "Value": 0
+    },
+    "CSDVersion": {
+      "FileOffset": 19656788,
+      "Offset": 52,
+      "Value": 0
+    },
+    "DependentLoadFlags": {
+      "FileOffset": 19656790,
+      "Offset": 54,
+      "Value": 0
+    },
+    "EditList": {
+      "FileOffset": 19656792,
+      "Offset": 56,
+      "Value": 0
+    },
+    "SecurityCookie": {
+      "FileOffset": 19656796,
+      "Offset": 60,
+      "Value": 26279880
+    },
+    "SEHandlerTable": {
+      "FileOffset": 19656800,
+      "Offset": 64,
+      "Value": 24649696
+    },
+    "SEHandlerCount": {
+      "FileOffset": 19656804,
+      "Offset": 68,
+      "Value": 13314
+    }
+  },
+  "authenticode_digest_check": {
+    "embedded_sha1_from_SpcIndirectDataContent": "6cbea0a5633e6139dd2f70a1fe241dd4b379e279",
+    "computed_authentihash_sha1": "af461bf88674c836f07cb04c75fed7885d31453d",
+    "result": "MISMATCH: embedded PE image digest does not match current file bytes",
+    "method_note": "Computed with Signify SignedPEFingerprinter 0.9.3; OpenSSL version regex was patched only in /tmp to support the host's 3.0.20 version string. This tests image digest matching, not trust-chain validation."
+  }
+}
