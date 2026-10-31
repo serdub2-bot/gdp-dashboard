@@ -1,0 +1,74 @@
+{
+  "SessionStart": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node -e \"const{spawnSync}=require('child_process'),p=require('path');const r=process.env.DEVIN_PLUGIN_ROOT||process.env.CLAUDE_PLUGIN_ROOT;if(!r)process.exit(0);const x=spawnSync(process.execPath,[p.join(r,'hooks','devin','dispatch.mjs'),'SessionStart'],{stdio:'inherit'});process.exit(typeof x.status==='number'?x.status:0)\"",
+          "timeout": 60
+        }
+      ]
+    }
+  ],
+  "UserPromptSubmit": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node -e \"const{spawnSync}=require('child_process'),p=require('path');const r=process.env.DEVIN_PLUGIN_ROOT||process.env.CLAUDE_PLUGIN_ROOT;if(!r)process.exit(0);const x=spawnSync(process.execPath,[p.join(r,'hooks','devin','dispatch.mjs'),'UserPromptSubmit'],{stdio:'inherit'});process.exit(typeof x.status==='number'?x.status:0)\"",
+          "timeout": 30
+        }
+      ]
+    }
+  ],
+  "PreToolUse": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node -e \"const{spawnSync}=require('child_process'),p=require('path');const r=process.env.DEVIN_PLUGIN_ROOT||process.env.CLAUDE_PLUGIN_ROOT;if(!r)process.exit(0);const x=spawnSync(process.execPath,[p.join(r,'hooks','devin','dispatch.mjs'),'PreToolUse'],{stdio:'inherit'});process.exit(typeof x.status==='number'?x.status:0)\"",
+          "timeout": 60
+        }
+      ]
+    }
+  ],
+  "PostToolUse": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node -e \"const{spawnSync}=require('child_process'),p=require('path');const r=process.env.DEVIN_PLUGIN_ROOT||process.env.CLAUDE_PLUGIN_ROOT;if(!r)process.exit(0);const x=spawnSync(process.execPath,[p.join(r,'hooks','devin','dispatch.mjs'),'PostToolUse'],{stdio:'inherit'});process.exit(typeof x.status==='number'?x.status:0)\"",
+          "timeout": 60
+        }
+      ]
+    }
+  ],
+  "Stop": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node -e \"const{spawnSync}=require('child_process'),p=require('path');const r=process.env.DEVIN_PLUGIN_ROOT||process.env.CLAUDE_PLUGIN_ROOT;if(!r)process.exit(0);const x=spawnSync(process.execPath,[p.join(r,'hooks','devin','dispatch.mjs'),'Stop'],{stdio:'inherit'});process.exit(typeof x.status==='number'?x.status:0)\"",
+          "timeout": 60
+        }
+      ]
+    }
+  ],
+  "SessionEnd": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node -e \"const{spawnSync}=require('child_process'),p=require('path');const r=process.env.DEVIN_PLUGIN_ROOT||process.env.CLAUDE_PLUGIN_ROOT;if(!r)process.exit(0);const x=spawnSync(process.execPath,[p.join(r,'hooks','devin','dispatch.mjs'),'SessionEnd'],{stdio:'inherit'});process.exit(typeof x.status==='number'?x.status:0)\"",
+          "timeout": 15
+        }
+      ]
+    }
+  ]
+}

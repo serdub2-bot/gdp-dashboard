@@ -1,0 +1,25 @@
+{
+  "name": "ecc",
+  "version": "2.2.3",
+  "description": "Harness-native ECC plugin for engineering teams - 71 agents, 314 skills, 98 legacy command shims, reusable hooks, rules, MCP conventions, and operator workflows. Hooks ship in Devin's hooks.v1 format and are best effort: Devin loads plugin hooks in local sessions only (CLI and Devin Desktop), never in cloud sessions.",
+  "author": {
+    "name": "Affaan Mustafa",
+    "email": "me@affaanmustafa.com",
+    "url": "https://x.com/affaanmustafa"
+  },
+  "homepage": "https://ecc.tools",
+  "repository": "https://github.com/affaan-m/ECC",
+  "license": "MIT",
+  "keywords": [
+    "devin",
+    "skills",
+    "hooks",
+    "rules",
+    "tdd",
+    "code-review",
+    "security",
+    "workflow",
+    "automation"
+  ],
+  "skills": "./skills/"
+}
